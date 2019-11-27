@@ -1,8 +1,10 @@
 %% hej
-
 P = 1; %Power to the system
 v = 1; % wind speed
+<<<<<<< HEAD
 h_torn = 3; % m height of the tower
+=======
+>>>>>>> c224f31080fbe6816e59c2a5639f558c873090d1
 d_hole = 1; % m holepattern diameter
 t_flange = 1; %flange thickness
 R_a = 7.5e-6; %surface 
