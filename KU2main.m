@@ -17,7 +17,7 @@ E = 206e9; % Pa Youngs modulus of steel
 n_screws = 36;	% number of swrews
 
 %index 1=M24 2=M27 3=M30 4=M36 5=M42 6=M48 7=M56
-%Pitch  out_dia  avg_dia  inner_dia  d_h  d_w
+%index 1=Pitch 2=out_dia 3=avg_dia 4=inner_dia 5=d_h 6=d_w
 Bolt = [
 3   24 22.051 20.752 28 33.61;
 3.5 30 27.727 26.211 35 45.75;
