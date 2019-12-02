@@ -6,17 +6,15 @@ v = 20; % wind speed
 h_tower = 110; %m height of the tower
 d_hole = 4; % m holepattern diameter
 t_flange = 0.15; %m flange thickness
-R_a = 7.5e-6; %surface 
 n_max = 0.75; %max usable power from windspeed
-sigma_utm = 30e6; %if and only if bolt >= M36
+sigma_utm = 30e6; %iff bolt >= M36
 my_WB = [0.10 0.40]; %(0.10 - 0.40) Friction between washer and bolt
 my_thread =  [0.07 0.35]; %(0.07-0.35) Frction in the thread
 w_flange = 0.19; %flange width
 d_tower = 2*(d_hole/2 + 0.065); %Tower outer diameter
-Pitch = 1.5; %Bolt Pitch
 E = 206e9; % Pa Youngs modulus of steel
 n_screws = 100;	% number of swrews
-delta_e = 35e-6;	% embedding of the screws
+delta_pl = 35e-6;	% embedding of the screws
 
 %index 1=M24 2=M30 3=M36 4=M42 5=M48 6=M56
 %index 1=Pitch 2=out_dia 3=avg_dia 4=inner_dia 5=d_h 6=d_bw 7=dww
@@ -39,7 +37,7 @@ A_ekv = pi/4*(B_dw^2-B_dh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
 c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
 F_0 = 2e5;  %Pretension of the screw
-delta_0s = F_0/c_s;
+F_0pl = F_0-delta_pl/(1/c_s+1/c_k);	% Embedding
 
 %% Forces on the connection
 F_wind = P/(v*n_max);
@@ -47,27 +45,36 @@ M_b = F_wind * h_tower;
 alpha = 2*pi/n_screws;
 F_N = sin([alpha:alpha:2*pi]);
 F_N = F_N * M_b/(d_hole*sum(F_N(1:n_screws/2)));
-DeltaF_e = delta_e/(1/c_s+1/c_k);
+F_s = F_0+c_s/(c_s+c_k).*F_N;
+F_k = F_s - F_N;
 
-F_Nm = max(F_N); %the maximum force applied to a single bolted joint
-F_s = F_0+c_s/(c_s+c_k)*F_Nm;
-F_k = F_s - F_Nm;
-sigma_max = (F_s)/(pi*Bolt(Bolt_c, 2)^2/4); %F/(pi/4 * D^2)
+% Stresses in the screws. F/(pi/4 * D^2)
+sigma_max = max(F_s)/(pi*Bolt(Bolt_c, 2)^2/4);
+sigma_m = F_0/(pi*Bolt(Bolt_c, 2)^2/4);
+sigma_a = (max(F_s)-F_0)/(pi*Bolt(Bolt_c, 2)^2/4);
+
+% elongations
+delta_0s = F_0/c_s;
+delta_0 = delta_0s * (c_s+c_k)/c_k;
 delta_s = F_s/c_s;
 
 % F/delta plots
 s = @(delta) delta*c_s;
 k = @(delta) delta_0s*(c_s+c_k) - delta*c_k;
-delta_0 = delta_0s * (c_s+c_k)/c_k;
 
 hold on
-ylim([0 s(delta_0)])
+ylim([0 max(F_k)])
 fplot(s,[0 delta_0], 'LineWidth', 2)
 fplot(k,[0 delta_0], 'LineWidth', 2)
-plot([0 delta_0],[F_0 F_0],'--k')
-plot([delta_s delta_s],[F_k F_s],'-k', 'LineWidth', 2)
+plot([0 delta_0s],[F_0 F_0],'--k')
+plot([0 max(delta_s)],[max(F_s) max(F_s)],'--k')
+plot([0 min(delta_s)],[min(F_s) min(F_s)],'--k')
+plot([0 max(delta_s)],[min(F_k) min(F_k)],'--k')
+for i = 1:n_screws
+	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])%,'-k', 'LineWidth', 2)
+end
 
 
 
-
-M_tot = F_0*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3) + my_WB*(Bolt(Bolt_c,6) + Bolt(Bolt_c,4))/4);
+M_tot = F_0*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3)...
+	+ my_WB*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))/4);
