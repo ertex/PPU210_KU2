@@ -14,6 +14,7 @@ w_flange = 190e-3; %flange width
 d_tower = 2*(d_hole/2 + 0.065) %Tower outer diameter
 Pitch = 1.5; %Bolt Pitch
 E = 206e9; % Pa Youngs modulus of steel
+n_screws = 36;	% number of swrews
 
 %index 1=M24 2=M27 3=M30 4=M36 5=M42 6=M48 7=M56
 %Pitch  out_dia  avg_dia  inner_dia  d_h  d_w
@@ -43,7 +44,7 @@ plot([0 delta_0],[s(delta_0s) s(delta_0s)])
 %% Forces on the connection
 F_wind = P/(v*n_max);
 M_b = F_wind * h_tower;
-
+alpha = 2*pi/
 
 
 
