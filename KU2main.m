@@ -42,6 +42,8 @@ M_b = F_wind * h_tower;
 alpha = 2*pi/n_screws;
 F_N = sin([alpha:alpha:2*pi]);
 F_N = F_N * M_b/(d_hole*sum(F_N(1:n_screws/2)));
+DeltaF_e = delta_e/(1/c_s+1/c_k);
+
 
 
 % F/delta plots
