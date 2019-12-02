@@ -27,6 +27,7 @@ Bolt = [
 Bolt_c = 3;  %what bolt is choosen
 B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
+
 c_s = E * (pi*Bolt(Bolt_c, 2)^4 /4) / (2*t_flange);	% = E_s*A_s/L_k
 % Maskinelement 2.15 - 2.17:
 x = ((2*t_flange*B_dw)/(w_flange)^2)^(1/3);
@@ -50,7 +51,7 @@ M_b = F_wind * h_tower;
 
 
 
-M_tot = F_ax*(0.16*Pitch + 0.58*my_thread*  )
+M_tot = F_ax*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3) + my_WB*(Bolt(Bolt_c,6) + Bolt(Bolt_c,4))/4);
 
 
 
