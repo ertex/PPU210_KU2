@@ -29,6 +29,10 @@ B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
 
 c_s = E * (pi*Bolt(Bolt_c, 2)^4 /4) / (2*t_flange);	% = E_s*A_s/L_k
+% Maskinelement 2.15 - 2.17:
+x = ((2*t_flange*B_dw)/(w_flange)^2)^(1/3);
+A_ekv = pi/4*(d_bw^2-d_bh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
+c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
 %% Forces on the connection
 F_wind = P/(v*n_max);
@@ -36,13 +40,6 @@ M_b = F_wind * h_tower;
 alpha = 2*pi/n_screws;
 F_N = sin([alpha:alpha:2*pi]);
 F_N = F_N * M_b/(d_hole*sum(F_N(1:n_screws/2)));
-
-
-% Maskinelement 2.15 - 2.17:
-x = ((2*t_flange*B_dw)/(w_flange)^2)^(1/3);
-A_ekv = pi/4*(d_bw^2-d_bh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
-c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
-
 
 % F/delta plots
 s = @(delta) delta*c_s;
