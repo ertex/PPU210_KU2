@@ -11,10 +11,12 @@ sigma_utm = 30e6; %if and only if bolt >= M36
 my_WB = [0.10 0.40]; %(0.10 - 0.40) Friction between washer and bolt
 my_thread =  [0.07 0.35]; %(0.07-0.35) Frction in the thread
 w_flange = 190e-3; %flange width
-d_tower = 2*(d_hole/2 + 0.065) %Tower outer diameter
+d_tower = 2*(d_hole/2 + 0.065); %Tower outer diameter
 Pitch = 1.5; %Bolt Pitch
 E = 206e9; % Pa Youngs modulus of steel
-n_screws = 36;	% number of swrews
+n_screws = 100;	% number of swrews
+delta_e = 35e-6;	% embedding of the screws
+
 %index 1=M24 2=M27 3=M30 4=M36 5=M42 6=M48 7=M56
 %index 1=Pitch 2=out_dia 3=avg_dia 4=inner_dia 5=d_h 6=d_bw 7=dww
 Bolt = [
@@ -31,7 +33,7 @@ B_dh = Bolt(Bolt_c, 5);
 c_s = E * (pi*Bolt(Bolt_c, 2)^4 /4) / (2*t_flange);	% = E_s*A_s/L_k
 % Maskinelement 2.15 - 2.17:
 x = ((2*t_flange*B_dw)/(w_flange)^2)^(1/3);
-A_ekv = pi/4*(d_bw^2-d_bh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
+A_ekv = pi/4*(B_dw^2-B_dh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
 c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
 %% Forces on the connection
@@ -40,6 +42,7 @@ M_b = F_wind * h_tower;
 alpha = 2*pi/n_screws;
 F_N = sin([alpha:alpha:2*pi]);
 F_N = F_N * M_b/(d_hole*sum(F_N(1:n_screws/2)));
+
 
 % F/delta plots
 s = @(delta) delta*c_s;
