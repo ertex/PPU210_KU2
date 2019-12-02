@@ -16,28 +16,39 @@ Pitch = 1.5; %Bolt Pitch
 E = 206e9; % Pa Youngs modulus of steel
 
 %index 1=M24 2=M27 3=M30 4=M36 5=M42 6=M48 7=M56
-%Pitch  out_dia  avg_dia  inner_dia  dh  dw
+%Pitch  out_dia  avg_dia  inner_dia  d_h  d_w
 Bolt = [
 3   24 22.051 20.752 28 33.61;
 3.5 30 27.727 26.211 35 45.75;
 4   36 33.402 31.670 42 51.11;
 4.5 42 39.077 37.129 48 59.95;
 5   48 44.752 42.587 56 69.45;
-5.5 56 52.428 50.046 66 78.66]
+5.5 56 52.428 50.046 66 78.66];
 
-c_s = E * pi*d_1^2/4 / t_flange;	% = E_s*A_s/L_k
-x = (t_flange/(t_flange+d_w));
-A_ekv = pi/4*(d_w^2-d_h^2) + pi/8*t_flange*d_w*((x+1)^2 - 1);
-c_k = E*A_ekv/t_flange;	% = E_k*A_k/L_k
+c_s = E * pi*d_1^2/4 / (2*t_flange);	% = E_s*A_s/L_k
+% Maskinelement 2.15 - 2.17:
+x = (2*t_flange*d_w/(2*t_flange+d_w)^2);
+A_ekv = pi/4*(d_w^2-d_h^2) + pi/8*2*t_flange*d_w*((x+1)^2 - 1);
+c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
+% F/delta plots
 s = @(delta) delta*c_s;
-k = @(delta)  - delta*c_k;
-plot([0 delta_0s],[])
+k = @(delta) delta_0s*(c_s+c_k) - delta*c_k;
+
+fplot(s,[0 delta_0])
+fplot(k,[delta_0s delta_0])
+plot([0 delta_0],[s(delta_0s) s(delta_0s)])
 
 
-Mb = F_wind * h_tower;
+%% Forces on the connection
+F_wind = P/(v*n_max);
+M_b = F_wind * h_tower;
 
-Mtot = Fax*(0.16*Pitch + 0.58*my_thread*  )
+
+
+
+
+M_tot = F_ax*(0.16*Pitch + 0.58*my_thread*  )
 
 
 
