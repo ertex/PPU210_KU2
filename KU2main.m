@@ -30,6 +30,10 @@ Bolt_c = 3;  %what bolt is choosen
 B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
 
+
+F_0 = 4e3;  %Pretension of the screw
+
+
 c_s = E * (pi*Bolt(Bolt_c, 2)^4 /4) / (2*t_flange);	% = E_s*A_s/L_k
 % Maskinelement 2.15 - 2.17:
 x = ((2*t_flange*B_dw)/(w_flange)^2)^(1/3);
@@ -44,7 +48,10 @@ F_N = sin([alpha:alpha:2*pi]);
 F_N = F_N * M_b/(d_hole*sum(F_N(1:n_screws/2)));
 DeltaF_e = delta_e/(1/c_s+1/c_k);
 
-
+F_Nm = max(F_N); %the maximum force applied to a single bolt
+F_s = F_0+c_s/(c_s+c_k)*F_Nm
+F_k = F_s *c_k/c_s;
+sigma_max = (F_s)/(pi*Bolt(Bolt_c 2)^2/4); %F/(pi/4 * D^2)
 
 % F/delta plots
 s = @(delta) delta*c_s;
@@ -59,4 +66,4 @@ plot([0 delta_0],[s(delta_0s) s(delta_0s)])
 
 
 
-M_tot = F_ax*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3) + my_WB*(Bolt(Bolt_c,6) + Bolt(Bolt_c,4))/4);
+M_tot = F_0*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3) + my_WB*(Bolt(Bolt_c,6) + Bolt(Bolt_c,4))/4);
