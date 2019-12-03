@@ -5,14 +5,16 @@ P 			= 2.5e6; 		% Power to the system
 v 			= 20; 			% [m/s] Wind speed
 h_tower 	= 110; 			% [m] height of the tower
 d_hole 		= 4; 			% [m] holepattern diameter
+d_tower 	= d_hole+0.130;	% Tower outer diameter
 t_flange 	= 0.15; 		% [m] flange thickness
-sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
+w_flange 	= 0.19; 		% Flange width
 my_WB 		= [0.10 0.40]; 	% (0.10-0.40) Friction between washer and bolt
 my_thread 	= [0.07 0.35]; 	% (0.07-0.35) Frction in the thread
-w_flange 	= 0.19; 		% Flange width
-d_tower 	= d_hole+0.130;	% Tower outer diameter
+sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
+sigma_s		= 8e8*0.8		% [Pa] For 8.8 class screws
 E 			= 206e9; 		% [Pa] Youngs modulus of steel
-n_screws 	= 100;			% Number of swrews
+n_screws 	= 118;			% Number of swrews
+F_0 		= 2e5;  		% [N] Pretension of the screw
 delta_pl 	= 35e-6;		% Embedding distance
 
 %index 1=M24 2=M30 3=M36 4=M42 5=M48 6=M56
@@ -27,6 +29,7 @@ Bolt = 1e-3 * [
 Bolt_c = 6;  %what bolt is choosen
 B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
+A_sp = pi/16*(Bolt(Bolt_c,3) + Bolt(Bolt_c,4) - Bolt(Bolt_c,1)*sqrt(3)/12);
 
 
 c_s = E * (pi*Bolt(Bolt_c, 2)^2 /4) / (2*t_flange);	% = E_s*A_s/L_k
@@ -35,7 +38,6 @@ x = (2*t_flange*B_dw/w_flange^2)^(1/3);
 A_ekv = pi/4*(B_dw^2-B_dh^2) + pi/8 *(w_flange-B_dw)*B_dw *((x+1)^2 - 1);
 c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
-F_0 = 2e5;  %Pretension of the screw
 F_0pl = F_0-delta_pl/(1/c_s+1/c_k);	% Embedding
 
 %% Forces on the connection
@@ -48,9 +50,9 @@ F_s = F_0+c_s/(c_s+c_k).*F_N;
 F_k = F_s - F_N;
 
 % Stresses in the screws. F/(pi/4 * D^2)
-sigma_max = max(F_s)/(pi*Bolt(Bolt_c, 2)^2/4);
-sigma_m = F_0/(pi*Bolt(Bolt_c, 2)^2/4);
-sigma_a = (max(F_s)-F_0)/(pi*Bolt(Bolt_c, 2)^2/4);
+sigma_max = max(F_s)/A_sp;
+sigma_m = F_0/A_sp;
+sigma_a = (max(F_s)-F_0)/A_sp;
 
 % elongations
 delta_0s = F_0/c_s;
@@ -73,7 +75,15 @@ for i = 1:n_screws
 	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])%,'-k', 'LineWidth', 2)
 end
 
-
+if n_screws*B_dw > d_hole*pi
+	fprintf(2,'not enough space for that many bolted joints!\n')
+end
+if sigma_a > sigma_utm
+	fprintf(2, 'fatigue limit is passed!\n')
+end
+if sigma_max > sigma_s
+	fprintf(2, 'plastic deformation in screws!\n')
+end
 
 M_tot = F_0*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3)...
 	+ my_WB*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))/4);
