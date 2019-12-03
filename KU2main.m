@@ -1,19 +1,19 @@
 %% hej
 %KU2 grupp 7F
 clear('all'); close; clc
-P 			= 2.5e6; % Power to the system
-v 			= 20; % Wind speed
-h_tower 	= 110; % [m] height of the tower
-d_hole 		= 4; % [m] holepattern diameter
-t_flange 	= 0.15; % [m] flange thickness
-sigma_utm 	= 30e6; % [Pa] iff bolt >= M36
-my_WB 		= [0.10 0.40]; % (0.10 - 0.40) Friction between washer and bolt
-my_thread 	=  [0.07 0.35]; % (0.07-0.35) Frction in the thread
-w_flange 	= 0.19; % Flange width
-d_tower 	= 2*(d_hole/2 + 0.065); % Tower outer diameter
-E 			= 206e9; % [Pa] Youngs modulus of steel
-n_screws 	= 100;	% Number of swrews
-delta_pl 	= 35e-6;	% Embedding distance
+P 			= 2.5e6; 		% Power to the system
+v 			= 20; 			% [m/s] Wind speed
+h_tower 	= 110; 			% [m] height of the tower
+d_hole 		= 4; 			% [m] holepattern diameter
+t_flange 	= 0.15; 		% [m] flange thickness
+sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
+my_WB 		= [0.10 0.40]; 	% (0.10-0.40) Friction between washer and bolt
+my_thread 	= [0.07 0.35]; 	% (0.07-0.35) Frction in the thread
+w_flange 	= 0.19; 		% Flange width
+d_tower 	= d_hole+0.130;	% Tower outer diameter
+E 			= 206e9; 		% [Pa] Youngs modulus of steel
+n_screws 	= 100;			% Number of swrews
+delta_pl 	= 35e-6;		% Embedding distance
 
 %index 1=M24 2=M30 3=M36 4=M42 5=M48 6=M56
 %index 1=Pitch 2=out_dia 3=avg_dia 4=inner_dia 5=d_h 6=d_bw 7=dww
