@@ -13,8 +13,8 @@ my_thread 	= [0.07 0.35]; 	% (0.07-0.35) Frction in the thread
 sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
 sigma_s		= 8e8*0.8;		% [Pa] For 8.8 class screws
 E 			= 206e9; 		% [Pa] Youngs modulus of steel
-n_screws 	= 118;			% Number of swrews
-F_0 		= 2e5;  		% [N] Pretension of the screw
+n_screws 	= 100;			% Number of swrews
+F_0 		= 5e5;  		% [N] Pretension of the screw
 delta_pl 	= 35e-6;		% Embedding distance
 
 %index 1=M24 2=M30 3=M36 4=M42 5=M48 6=M56
@@ -26,10 +26,11 @@ Bolt = 1e-3 * [
 4.5 42 39.077 37.129 48 59.95 78;
 5   48 44.752 42.587 56 69.45 92;
 5.5 56 52.428 50.046 66 78.66 105];
-Bolt_c = 6;  %what bolt is choosen
+Bolt_c = 3;  %what bolt is choosen
 B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
-A_sp = pi/16*(Bolt(Bolt_c,3) + Bolt(Bolt_c,4) - Bolt(Bolt_c,1)*sqrt(3)/12);
+
+A_sp = pi/16*(Bolt(Bolt_c,3) + Bolt(Bolt_c,4) - Bolt(Bolt_c,1)*sqrt(3)/12)^2;
 
 
 c_s = E * (pi*Bolt(Bolt_c, 2)^2 /4) / (2*t_flange);	% = E_s*A_s/L_k
@@ -59,21 +60,6 @@ delta_0s = F_0/c_s;
 delta_0 = delta_0s * (c_s+c_k)/c_k;
 delta_s = F_s/c_s;
 
-% F/delta plots
-s = @(delta) delta*c_s;
-k = @(delta) delta_0s*(c_s+c_k) - delta*c_k;
-
-hold on
-ylim([0 max(F_k)])
-fplot(s,[0 delta_0], 'LineWidth', 2)
-fplot(k,[0 delta_0], 'LineWidth', 2)
-plot([0 delta_0s],[F_0 F_0],'--k')
-plot([0 max(delta_s)],[max(F_s) max(F_s)],'--k')
-plot([0 min(delta_s)],[min(F_s) min(F_s)],'--k')
-plot([0 max(delta_s)],[min(F_k) min(F_k)],'--k')
-for i = 1:n_screws
-	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])%,'-k', 'LineWidth', 2)
-end
 
 if n_screws*B_dw > d_hole*pi
 	fprintf(2,'not enough space for that many bolted joints!\n')
@@ -85,23 +71,44 @@ if sigma_max > sigma_s
 	fprintf(2, 'plastic deformation in screws!\n')
 end
 
-%the minimum and maximum tourghe you have to apply in order to get the
+%the minimum and maximum tourque you have to apply in order to get the
 %desired pretension
 M_tot = F_0.*(0.16*Bolt(Bolt_c,1) + 0.58.*my_thread.*Bolt(Bolt_c,3)...
-	+ my_WB.*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4) 
+	+ my_WB.*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4);
 
 %In the worst case, what pretension will be generated in the boundry conditions.
 F_tension = M_tot./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
-	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4)
+	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4);
 
 %A tourouch is chosen that seems fitting
-M_choise = 5e3; 
+M_choice = 5e3; 
 
 %what pretension will that generate?
-F_tension_c = M_choise./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
-	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4)
+F_tension_c = M_choice./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
+	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4);
+
+Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0,F_s,F_k,n_screws);
+Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0pl,F_s,F_k,n_screws);
 
 
 
+%% Fdeltaplot: function description
+function Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0,F_s,F_k,n_screws)
+% F/delta plots
+s = @(delta) delta*c_s;
+k = @(delta) delta_0s*(c_s+c_k) - delta*c_k;
 
+hold on
+ylim([0 sigma_s*A_sp*1.1])
+plot([0 delta_0],[sigma_s*A_sp sigma_s*A_sp],'--r')
+fplot(s,[0 delta_0], 'LineWidth', 2)
+fplot(k,[0 delta_0], 'LineWidth', 2)
+plot([0 delta_0s],[F_0 F_0],'--k')
+plot([0 max(delta_s)],[max(F_s) max(F_s)],'--k')
+plot([0 min(delta_s)],[min(F_s) min(F_s)],'--k')
+plot([0 max(delta_s)],[min(F_k) min(F_k)],'--k')
 
+for i = 1:n_screws
+	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])%,'-k', 'LineWidth', 2)
+end
+end
