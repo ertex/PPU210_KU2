@@ -11,7 +11,7 @@ w_flange 	= 0.19; 		% Flange width
 my_WB 		= [0.10 0.40]; 	% (0.10-0.40) Friction between washer and bolt
 my_thread 	= [0.07 0.35]; 	% (0.07-0.35) Frction in the thread
 sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
-sigma_s		= 8e8*0.8		% [Pa] For 8.8 class screws
+sigma_s		= 8e8*0.8;		% [Pa] For 8.8 class screws
 E 			= 206e9; 		% [Pa] Youngs modulus of steel
 n_screws 	= 118;			% Number of swrews
 F_0 		= 2e5;  		% [N] Pretension of the screw
