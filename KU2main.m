@@ -40,7 +40,7 @@ c_k = E*A_ekv/(2*t_flange);	% = E_k*A_k/L_k
 
 F_0pl = F_0-delta_pl/(1/c_s+1/c_k);	% Embedding
 
-%% Forces on the connection
+% Forces on the connection
 F_wind = P/(v*0.75);
 M_b = F_wind * h_tower;
 alpha = 2*pi/n_screws;
@@ -85,5 +85,23 @@ if sigma_max > sigma_s
 	fprintf(2, 'plastic deformation in screws!\n')
 end
 
-M_tot = F_0*(0.16*Bolt(Bolt_c,1) + 0.58*my_thread*Bolt(Bolt_c,3)...
-	+ my_WB*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))/4);
+%the minimum and maximum tourghe you have to apply in order to get the
+%desired pretension
+M_tot = F_0.*(0.16*Bolt(Bolt_c,1) + 0.58.*my_thread.*Bolt(Bolt_c,3)...
+	+ my_WB.*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4) 
+
+%In the worst case, what pretension will be generated in the boundry conditions.
+F_tension = M_tot./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
+	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4)
+
+%A tourouch is chosen that seems fitting
+M_choise = 5e3; 
+
+%what pretension will that generate?
+F_tension_c = M_choise./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
+	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4)
+
+
+
+
+
