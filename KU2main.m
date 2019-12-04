@@ -14,7 +14,7 @@ sigma_utm 	= 30e6; 		% [Pa] iff bolt >= M36
 sigma_s		= 8e8*0.8;		% [Pa] For 8.8 class screws
 E 			= 206e9; 		% [Pa] Youngs modulus of steel
 n_screws 	= 100;			% Number of swrews
-F_0 		= 6.5e5;  		% [N] Pretension of the screw
+F_0 		= 12e5;  		% [N] Pretension of the screw
 delta_pl 	= 35e-6;		% Embedding distance
 
 %index 1=M24 2=M30 3=M36 4=M42 5=M48 6=M56
@@ -26,7 +26,7 @@ Bolt = 1e-3 * [
 4.5 42 39.077 37.129 48 59.95 78;
 5   48 44.752 42.587 56 69.45 92;
 5.5 56 52.428 50.046 66 78.66 105];
-Bolt_c = 4;  %what bolt is choosen
+Bolt_c = 6;  %what bolt is choosen
 B_dw = Bolt(Bolt_c, 7);
 B_dh = Bolt(Bolt_c, 5);
 
@@ -42,7 +42,7 @@ F_tension = M_tot./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3).
 	+ flip(my_WB).*(Bolt(Bolt_c,6)+Bolt(Bolt_c,4))./4);
 
 %A torque is chosen that seems fitting
-M_choice = 5e3; 
+M_choice = 7.5e3; 
 
 %what pretension will that generate?
 F_tension_c = M_choice./(0.16*Bolt(Bolt_c,1) + 0.58.*flip(my_thread).*Bolt(Bolt_c,3)...
@@ -89,13 +89,11 @@ end
 
 
 Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0,F_s,F_k,n_screws);
-Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0pl,F_s,F_k,n_screws);
 
 
 
-%% Fdeltaplot: function description
+%% Fdeltaplot: F/delta plots
 function Fdeltaplot(c_s,c_k,sigma_s,A_sp,delta_0,delta_s,delta_0s,F_0,F_s,F_k,n_screws)
-% F/delta plots
 s = @(delta) delta*c_s;
 k = @(delta) delta_0s*(c_s+c_k) - delta*c_k;
 
@@ -110,6 +108,6 @@ plot([0 min(delta_s)],[min(F_s) min(F_s)],'--k')
 plot([0 max(delta_s)],[min(F_k) min(F_k)],'--k')
 
 for i = 1:n_screws
-	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])%,'-k', 'LineWidth', 2)
+	plot([delta_s(i) delta_s(i)],[F_k(i) F_s(i)])
 end
 end
